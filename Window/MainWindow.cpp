@@ -42,11 +42,11 @@ void MainWindow::onBrowserWaitComplete() {
     ui->webEngineView->page()->runJavaScript("$(function(){$('#flash_object').css({'position': 'fixed','left': '0','width': '100%','height': '100%','z-index': '1000000'})});",[this](const QVariant &v){
         cout << v.toString().toStdString() << endl;
     });
-    this->resize(960,580);
+    this->resize(960,580 + this->ui->statusbar->height());
 }
 
 void MainWindow::onWindowResized() {
-    double resizedHeight = (this->size().width() / 960.0) * 580.0;
+    double resizedHeight = (this->size().width() / 960.0) * (580.0 + (double)this->ui->statusbar->height());
     this->resize(this->size().width(),(int)resizedHeight);
 }
 
