@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <QFileDialog>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
@@ -10,6 +11,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->webEngineView,SIGNAL(loadFinished(bool)),this,SLOT(onBrowserLoadFinish(bool)));
     ui->webEngineView->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
     wRThread = std::unique_ptr<std::thread>(new std::thread(&MainWindow::windowResizeCheck,this));
+    //init statusbar button
+    SShotbutton = std::unique_ptr<QPushButton>(new QPushButton("スクショ"));
+    ui->statusbar->addWidget(SShotbutton.get());
+    connect(SShotbutton.get(),SIGNAL(clicked()),this,SLOT(saveScreenShot()));
 }
 MainWindow::~MainWindow() {
     stopAllWindowThread = true;
@@ -60,4 +65,14 @@ void MainWindow::windowResizeCheck() {
             QMetaObject::invokeMethod(this,"onWindowResized");
         }
     }
+}
+
+void MainWindow::saveScreenShot() {
+    cout << "took screenshot" << endl;
+    QPixmap p = QPixmap::grabWidget(ui->webEngineView);
+    QString savepath = QFileDialog::getSaveFileName(this,"スクショを保存","","PNG (*.png)");
+    if(savepath.isEmpty()) return;
+    std::thread([=]{
+        p.save(savepath);
+    }).join();
 }
