@@ -82,6 +82,7 @@ void MainWindow::saveScreenShot() {
     QPixmap p = QPixmap::grabWidget(ui->webEngineView);
     QString savepath = QFileDialog::getSaveFileName(this,"スクショを保存","","PNG (*.png)");
     if(savepath.isEmpty()) return;
+    if(!savepath.endsWith(".png")) savepath += ".png";
     std::thread([=]{
         p.save(savepath);
     }).join();
