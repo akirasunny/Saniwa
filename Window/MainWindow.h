@@ -3,7 +3,7 @@
 #include <memory>
 #include <thread>
 #include "ui_MainWindow.h"
-#include <QPushButton>
+#include <QToolButton>
 
 class MainWindow : public QMainWindow{
     Q_OBJECT
@@ -18,10 +18,12 @@ private:
     bool resizeLock = false;
     bool stopAllWindowThread = false;
     //ui
-    std::unique_ptr<QPushButton> SShotbutton;
+    std::unique_ptr<QToolButton> sShotButton;
+    std::unique_ptr<QToolButton> logoutButton;
 private slots:
     void onBrowserLoadFinish(bool stat);
     void onBrowserWaitComplete();
     void onWindowResized();
     void saveScreenShot();
+    void logoutDMM();
 };

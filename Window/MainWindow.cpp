@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <QFileDialog>
+#include <QMessageBox>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
@@ -12,9 +13,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->webEngineView->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
     wRThread = std::unique_ptr<std::thread>(new std::thread(&MainWindow::windowResizeCheck,this));
     //init statusbar button
-    SShotbutton = std::unique_ptr<QPushButton>(new QPushButton("スクショ"));
-    ui->statusbar->addWidget(SShotbutton.get());
-    connect(SShotbutton.get(),SIGNAL(clicked()),this,SLOT(saveScreenShot()));
+    sShotButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
+    sShotButton->setText("スクショ");
+    ui->statusbar->addWidget(sShotButton.get());
+    connect(sShotButton.get(),SIGNAL(clicked()),this,SLOT(saveScreenShot()));
+    logoutButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
+    logoutButton->setText("ログアウト");
+    ui->statusbar->addWidget(logoutButton.get());
+    connect(logoutButton.get(),SIGNAL(clicked()),this,SLOT(logoutDMM()));
+
 }
 MainWindow::~MainWindow() {
     stopAllWindowThread = true;
@@ -27,6 +34,7 @@ void MainWindow::onBrowserLoadFinish(bool stat) {
         tokenLoadOK = true;
         cout << "Game page load OK." << endl;
         ui->webEngineView->page()->runJavaScript("$(\"#game_frame\").attr(\"src\")",[this](const QVariant &v) {
+            if(v.isNull() || v.toString().isEmpty()) return;
             cout << "iframe url " << v.toString().toStdString() << endl;
             ui->webEngineView->setUrl(QUrl(v.toString()));
         });
@@ -38,6 +46,8 @@ void MainWindow::onBrowserLoadFinish(bool stat) {
             QMetaObject::invokeMethod(this,"onBrowserWaitComplete");
         });
         th.detach();
+    }else if(url == "http://www.dmm.com/"){
+        ui->webEngineView->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
     }
 }
 
@@ -75,4 +85,11 @@ void MainWindow::saveScreenShot() {
     std::thread([=]{
         p.save(savepath);
     }).join();
+}
+
+void MainWindow::logoutDMM() {
+    tokenLoadOK = false;
+    if(QMessageBox::question(this,"Saniwa","本当に本丸からログアウトしますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
+        ui->webEngineView->setUrl(QUrl("https://www.dmm.com/my/-/login/logout/=/path=Sg__/"));
+    }
 }
