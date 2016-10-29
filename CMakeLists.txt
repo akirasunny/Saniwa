@@ -26,6 +26,11 @@ if(UNIX OR LINUX OR APPLE)
     set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} pthread)
 endif()
 
+#if MSVC
+if(COMPILER_MSVC)
+    add_definitions(-DUNICODE -D_UNICODE)
+ENDIF()
+
 #release build
 set(OS_BUNDLE "")
 if(RELEASE_BUILD)
