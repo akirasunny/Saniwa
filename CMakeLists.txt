@@ -35,7 +35,7 @@ if(RELEASE_BUILD)
 endif()
 
 #set source files
-set(SOURCE_FILES main.cpp Window/MainWindow.cpp Window/MainWindow.h)
+set(SOURCE_FILES winmain.cpp main.cpp Window/MainWindow.cpp Window/MainWindow.h)
 add_executable(Saniwa ${OS_BUNDLE} ${SOURCE_FILES})
 target_link_libraries(Saniwa Qt5::Core Qt5::Widgets Qt5::WebEngineWidgets Qt5::WebEngineCore ${ADDITIONAL_LIBRARIES})
 
