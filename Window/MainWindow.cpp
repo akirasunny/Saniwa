@@ -8,17 +8,17 @@
 using namespace std;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow){
     ui->setupUi(this);
-    this->setWindowTitle("Saniwa");
+    this->setWindowTitle(u8"Saniwa");
     connect(ui->webEngineView,SIGNAL(loadFinished(bool)),this,SLOT(onBrowserLoadFinish(bool)));
     ui->webEngineView->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
     wRThread = std::unique_ptr<std::thread>(new std::thread(&MainWindow::windowResizeCheck,this));
     //init statusbar button
     sShotButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
-    sShotButton->setText("スクショ");
+    sShotButton->setText(u8"スクショ");
     ui->statusbar->addWidget(sShotButton.get());
     connect(sShotButton.get(),SIGNAL(clicked()),this,SLOT(saveScreenShot()));
     logoutButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
-    logoutButton->setText("ログアウト");
+    logoutButton->setText(u8"ログアウト");
     ui->statusbar->addWidget(logoutButton.get());
     connect(logoutButton.get(),SIGNAL(clicked()),this,SLOT(logoutDMM()));
 
@@ -30,7 +30,7 @@ MainWindow::~MainWindow() {
 void MainWindow::onBrowserLoadFinish(bool stat) {
     std::string url = ui->webEngineView->url().toString().toStdString();
     cout << "Load finished. " << url << endl;
-    if(url == u8"http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"){
+    if(url == "http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"){
         tokenLoadOK = true;
         cout << "Game page load OK." << endl;
         ui->webEngineView->page()->runJavaScript("$(\"#game_frame\").attr(\"src\")",[this](const QVariant &v) {
@@ -38,7 +38,7 @@ void MainWindow::onBrowserLoadFinish(bool stat) {
             cout << "iframe url " << v.toString().toStdString() << endl;
             ui->webEngineView->setUrl(QUrl(v.toString()));
         });
-    }else if(tokenLoadOK && ui->webEngineView->url().authority().toStdString() == u8"osapi.dmm.com"){
+    }else if(tokenLoadOK && ui->webEngineView->url().authority().toStdString() == "osapi.dmm.com"){
         std::thread th([this](){
             cout << "sleep start" << endl;
             std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -80,7 +80,7 @@ void MainWindow::windowResizeCheck() {
 void MainWindow::saveScreenShot() {
     cout << "took screenshot" << endl;
     QPixmap p = QPixmap::grabWidget(ui->webEngineView);
-    QString savepath = QFileDialog::getSaveFileName(this,"スクショを保存","","PNG (*.png)");
+    QString savepath = QFileDialog::getSaveFileName(this,u8"スクショを保存","","PNG (*.png)");
     if(savepath.isEmpty()) return;
     if(!savepath.endsWith(".png")) savepath += ".png";
     std::thread([=]{
@@ -90,7 +90,7 @@ void MainWindow::saveScreenShot() {
 
 void MainWindow::logoutDMM() {
     tokenLoadOK = false;
-    if(QMessageBox::question(this,"Saniwa","本当に本丸からログアウトしますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
-        ui->webEngineView->setUrl(QUrl("https://www.dmm.com/my/-/login/logout/=/path=Sg__/"));
+    if(QMessageBox::question(this,"Saniwa",u8"本当に本丸からログアウトしますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
+        ui->webEngineView->setUrl(QUrl(u8"https://www.dmm.com/my/-/login/logout/=/path=Sg__/"));
     }
 }
