@@ -26,12 +26,6 @@ if(UNIX OR LINUX OR APPLE)
     set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} pthread)
 endif()
 
-#if MSVC
-if(MSVC)
-    set_target_properties(TestProject PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
-    add_definitions(-D_UNICODE)
-ENDIF()
-
 #release build
 set(OS_BUNDLE "")
 if(RELEASE_BUILD)
@@ -40,6 +34,14 @@ if(RELEASE_BUILD)
     endif()
 endif()
 
+#set source files
 set(SOURCE_FILES main.cpp Window/MainWindow.cpp Window/MainWindow.h)
 add_executable(Saniwa ${OS_BUNDLE} ${SOURCE_FILES})
 target_link_libraries(Saniwa Qt5::Core Qt5::Widgets Qt5::WebEngineWidgets Qt5::WebEngineCore ${ADDITIONAL_LIBRARIES})
+
+#if MSVC
+if(MSVC)
+    add_definitions(-D_UNICODE)
+    set_target_properties(Saniwa PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
+    set_target_properties(Saniwa PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+ENDIF()
