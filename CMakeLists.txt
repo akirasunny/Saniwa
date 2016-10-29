@@ -28,6 +28,7 @@ endif()
 
 #if MSVC
 if(MSVC)
+    set_target_properties(TestProject PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
     add_definitions(-D_UNICODE)
 ENDIF()
 
