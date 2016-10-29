@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <thread>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -6,6 +6,7 @@
 #include "ui_MainWindow.h"
 
 using namespace std;
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow){
     ui->setupUi(this);
     this->setWindowTitle(u8"Saniwa");
@@ -23,10 +24,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(logoutButton.get(),SIGNAL(clicked()),this,SLOT(logoutDMM()));
 
 }
+
 MainWindow::~MainWindow() {
     stopAllWindowThread = true;
     wRThread->detach();
 }
+
 void MainWindow::onBrowserLoadFinish(bool stat) {
     std::string url = ui->webEngineView->url().toString().toStdString();
     cout << "Load finished. " << url << endl;
