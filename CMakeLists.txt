@@ -27,8 +27,8 @@ if(UNIX OR LINUX OR APPLE)
 endif()
 
 #if MSVC
-if(COMPILER_MSVC)
-    add_definitions(-DUNICODE -D_UNICODE)
+if(MSVC)
+    add_definitions(-D_UNICODE)
 ENDIF()
 
 #release build
