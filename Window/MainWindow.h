@@ -20,10 +20,12 @@ private:
     //ui
     std::unique_ptr<QToolButton> sShotButton;
     std::unique_ptr<QToolButton> logoutButton;
+    std::unique_ptr<QToolButton> reloadButton;
 private slots:
     void onBrowserLoadFinish(bool stat);
     void onBrowserWaitComplete();
     void onWindowResized();
     void saveScreenShot();
     void logoutDMM();
+    void reloadPage();
 };

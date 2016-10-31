@@ -22,6 +22,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     logoutButton->setText(u8"ログアウト");
     ui->statusbar->addWidget(logoutButton.get());
     connect(logoutButton.get(),SIGNAL(clicked()),this,SLOT(logoutDMM()));
+    reloadButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
+    reloadButton->setText(u8"リロード");
+    ui->statusbar->addWidget(reloadButton.get());
+    connect(reloadButton.get(),SIGNAL(clicked()),this,SLOT(reloadPage()));
 
 }
 
@@ -95,5 +99,11 @@ void MainWindow::logoutDMM() {
     tokenLoadOK = false;
     if(QMessageBox::question(this,"Saniwa",u8"本当に本丸からログアウトしますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
         ui->webEngineView->setUrl(QUrl(u8"https://www.dmm.com/my/-/login/logout/=/path=Sg__/"));
+    }
+}
+
+void MainWindow::reloadPage() {
+    if(QMessageBox::question(this,"Saniwa",u8"リロードしますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
+        ui->webEngineView->reload();
     }
 }
