@@ -30,8 +30,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     //not working on X11 env
     onTopButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
     onTopButton->setText(u8"最上面に表示");
+    onTopButton->setCheckable(true);
     ui->statusbar->addWidget(onTopButton.get());
-    connect(onTopButton.get(),SIGNAL(clicked()),this,SLOT(enableOnTop()));
+    connect(onTopButton.get(),SIGNAL(toggled(bool)),this,SLOT(enableOnTop(bool)));
 #endif
     cout << "window initialized" << endl;
 }
@@ -115,18 +116,12 @@ void MainWindow::reloadPage() {
     }
 }
 
-void MainWindow::enableOnTop() {
-    if(onTopEnabledFlag){
+void MainWindow::enableOnTop(bool toggle) {
+    if(!toggle){
         this->setWindowFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint);
-        onTopButton->setText(u8"最上面に表示");
-        this->onTopEnabledFlag = false;
         this->show();
-        cout << "disabled" << endl;
     }else{
         this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
-        onTopButton->setText(u8"最上面に表示を解除");
         this->show();
-        this->onTopEnabledFlag = true;
-        cout << "enabled" << endl;
     }
 }

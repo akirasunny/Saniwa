@@ -22,7 +22,6 @@ private:
     std::unique_ptr<QToolButton> logoutButton;
     std::unique_ptr<QToolButton> reloadButton;
     std::unique_ptr<QToolButton> onTopButton;
-    bool onTopEnabledFlag = false;
 private slots:
     void onBrowserLoadFinish(bool stat);
     void onBrowserWaitComplete();
@@ -30,5 +29,5 @@ private slots:
     void saveScreenShot();
     void logoutDMM();
     void reloadPage();
-    void enableOnTop();
+    void enableOnTop(bool toggle);
 };
