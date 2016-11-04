@@ -26,7 +26,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     reloadButton->setText(u8"リロード");
     ui->statusbar->addWidget(reloadButton.get());
     connect(reloadButton.get(),SIGNAL(clicked()),this,SLOT(reloadPage()));
-
+#ifndef __unix
+    //not working on X11 env
+    onTopButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
+    onTopButton->setText(u8"最上面に表示");
+    ui->statusbar->addWidget(onTopButton.get());
+    connect(onTopButton.get(),SIGNAL(clicked()),this,SLOT(enableOnTop()));
+#endif
+    cout << "window initialized" << endl;
 }
 
 MainWindow::~MainWindow() {
@@ -105,5 +112,21 @@ void MainWindow::logoutDMM() {
 void MainWindow::reloadPage() {
     if(QMessageBox::question(this,"Saniwa",u8"リロードしますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
         ui->webEngineView->reload();
+    }
+}
+
+void MainWindow::enableOnTop() {
+    if(onTopEnabledFlag){
+        this->setWindowFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint);
+        onTopButton->setText(u8"最上面に表示");
+        this->onTopEnabledFlag = false;
+        this->show();
+        cout << "disabled" << endl;
+    }else{
+        this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
+        onTopButton->setText(u8"最上面に表示を解除");
+        this->show();
+        this->onTopEnabledFlag = true;
+        cout << "enabled" << endl;
     }
 }
