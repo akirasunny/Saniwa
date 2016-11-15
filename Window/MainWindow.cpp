@@ -34,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->statusbar->addWidget(onTopButton.get());
     connect(onTopButton.get(),SIGNAL(toggled(bool)),this,SLOT(enableOnTop(bool)));
 #endif
+	muteButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
+	muteButton->setText(u8"消音");
+	muteButton->setCheckable(true);
+	ui->statusbar->addWidget(muteButton.get());
     cout << "window initialized" << endl;
 }
 
@@ -124,4 +128,8 @@ void MainWindow::enableOnTop(bool toggle) {
         this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
         this->show();
     }
+}
+
+void MainWindow::enableMute(bool toggle) {
+	toggle ? ui->webEngineView->page()->setAudioMuted(true) : ui->webEngineView->page()->setAudioMuted(false);
 }

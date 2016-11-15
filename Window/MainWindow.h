@@ -22,6 +22,7 @@ private:
     std::unique_ptr<QToolButton> logoutButton;
     std::unique_ptr<QToolButton> reloadButton;
     std::unique_ptr<QToolButton> onTopButton;
+	std::unique_ptr<QToolButton> muteButton;
 private slots:
     void onBrowserLoadFinish(bool stat);
     void onBrowserWaitComplete();
@@ -30,4 +31,5 @@ private slots:
     void logoutDMM();
     void reloadPage();
     void enableOnTop(bool toggle);
+	void enableMute(bool toggle);
 };
