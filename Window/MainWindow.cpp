@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 	muteButton->setText(u8"消音");
 	muteButton->setCheckable(true);
 	ui->statusbar->addWidget(muteButton.get());
+	connect(muteButton.get(), SIGNAL(toggled(bool)), this, SLOT(enableMute(bool)));
     cout << "window initialized" << endl;
 }
 
