@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "Browser/UserScriptManager.h"
 
 using namespace std;
 
@@ -11,7 +12,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->setupUi(this);
     this->setWindowTitle(u8"Saniwa");
     connect(ui->webEngineView,SIGNAL(loadFinished(bool)),this,SLOT(onBrowserLoadFinish(bool)));
-    ui->webEngineView->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
+    //init js plugin
+    UserScriptManager::addUserScript(&ui->webEngineView->page()->scripts());
+    ui->webEngineView->page()->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
     wRThread = std::unique_ptr<std::thread>(new std::thread(&MainWindow::windowResizeCheck,this));
     //init statusbar button
     sShotButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
@@ -39,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 	muteButton->setCheckable(true);
 	ui->statusbar->addWidget(muteButton.get());
 	connect(muteButton.get(), SIGNAL(toggled(bool)), this, SLOT(enableMute(bool)));
+    this->resize(960, 580 + this->ui->statusbar->height());
     cout << "window initialized" << endl;
 }
 
@@ -53,30 +57,13 @@ void MainWindow::onBrowserLoadFinish(bool stat) {
     if(url == "http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"){
         tokenLoadOK = true;
         cout << "Game page load OK." << endl;
-        ui->webEngineView->page()->runJavaScript("$(\"#game_frame\").attr(\"src\")",[this](const QVariant &v) {
-            if(v.isNull() || v.toString().isEmpty()) return;
-            cout << "iframe url " << v.toString().toStdString() << endl;
-            ui->webEngineView->setUrl(QUrl(v.toString()));
-        });
-    }else if(tokenLoadOK && ui->webEngineView->url().authority().toStdString() == "osapi.dmm.com"){
-        std::thread th([this](){
-            cout << "sleep start" << endl;
-            std::this_thread::sleep_for(std::chrono::seconds(3));
-            //call slot on main window thread
-            QMetaObject::invokeMethod(this,"onBrowserWaitComplete");
-        });
-        th.detach();
     }else if(url == "http://www.dmm.com/"){
-        ui->webEngineView->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
+        ui->webEngineView->page()->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
     }
 }
 
 void MainWindow::onBrowserWaitComplete() {
     if(ui == nullptr) return;
-    ui->webEngineView->page()->runJavaScript("document.body.style.overflow = \"hidden\"");
-    ui->webEngineView->page()->runJavaScript("$(function(){$('#flash_object').css({'position': 'fixed','left': '0','width': '100%','height': '100%','z-index': '1000000'})});",[this](const QVariant &v){
-        cout << v.toString().toStdString() << endl;
-    });
     this->resize(960,580 + this->ui->statusbar->height());
 }
 

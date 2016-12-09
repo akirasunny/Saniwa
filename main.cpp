@@ -7,6 +7,7 @@
 
 int main(int argc, char *argv[]){
     QApplication app(argc, argv);
+    Q_INIT_RESOURCE(resources);
     QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     std::unique_ptr<MainWindow> mainWindow(new MainWindow());
     mainWindow->show();
