@@ -104,6 +104,7 @@ void MainWindow::logoutDMM() {
 
 void MainWindow::reloadPage() {
     if(QMessageBox::question(this,"Saniwa",u8"リロードしますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
+        ui->webEngineView->stop();
         ui->webEngineView->reload();
     }
 }
