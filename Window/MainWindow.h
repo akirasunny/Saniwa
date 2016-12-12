@@ -4,6 +4,7 @@
 #include <thread>
 #include "ui_MainWindow.h"
 #include <QToolButton>
+#include <QCloseEvent>
 
 class MainWindow : public QMainWindow{
     Q_OBJECT
@@ -23,6 +24,7 @@ private:
     std::unique_ptr<QToolButton> reloadButton;
     std::unique_ptr<QToolButton> onTopButton;
 	std::unique_ptr<QToolButton> muteButton;
+    void closeEvent(QCloseEvent *event) override;
 private slots:
     void onBrowserLoadFinish(bool stat);
     void onBrowserWaitComplete();

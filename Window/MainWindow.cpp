@@ -121,3 +121,11 @@ void MainWindow::enableOnTop(bool toggle) {
 void MainWindow::enableMute(bool toggle) {
 	toggle ? ui->webEngineView->page()->setAudioMuted(true) : ui->webEngineView->page()->setAudioMuted(false);
 }
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    if(QMessageBox::question(this,"Saniwa",u8"本当に終了しますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
+        event->accept();
+    }else{
+        event->ignore();
+    }
+}
