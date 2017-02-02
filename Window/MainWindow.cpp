@@ -1,6 +1,8 @@
 ﻿#include <iostream>
 #include <thread>
 #include <QFileDialog>
+#include <QBrush>
+#include <QPainter>
 #include <QMessageBox>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
@@ -18,9 +20,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     wRThread = std::unique_ptr<std::thread>(new std::thread(&MainWindow::windowResizeCheck,this));
     //init statusbar button
     sShotButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
+    sShotMenu = std::unique_ptr<QMenu>(new QMenu(this));
+    sShotMenu->addAction(u8"名前を隠してスクショ",this,SLOT(saveScennShotWithoutName()));
+    sShotButton->setMenu(sShotMenu.get());
+    sShotButton->setPopupMode(QToolButton::MenuButtonPopup);
     sShotButton->setText(u8"スクショ");
     ui->statusbar->addWidget(sShotButton.get());
-    connect(sShotButton.get(),SIGNAL(clicked()),this,SLOT(saveScreenShot()));
+    connect(sShotButton.get(),SIGNAL(clicked()),this,SLOT(saveScreenShotWithName()));
     logoutButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
     logoutButton->setText(u8"ログアウト");
     ui->statusbar->addWidget(logoutButton.get());
@@ -42,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
 	muteButton->setCheckable(true);
 	ui->statusbar->addWidget(muteButton.get());
 	connect(muteButton.get(), SIGNAL(toggled(bool)), this, SLOT(enableMute(bool)));
-    this->resize(960, 580 + this->ui->statusbar->height());
+    this->resize(960, 580 + this->ui->statusbar->height() + 3);
     cout << "window initialized" << endl;
 }
 
@@ -62,14 +68,9 @@ void MainWindow::onBrowserLoadFinish(bool stat) {
     }
 }
 
-void MainWindow::onBrowserWaitComplete() {
-    if(ui == nullptr) return;
-    this->resize(960,580 + this->ui->statusbar->height());
-}
-
 void MainWindow::onWindowResized() {
-    double resizedHeight = (this->size().width() / 960.0) * (580.0 + (double)this->ui->statusbar->height());
-    this->resize(this->size().width(),(int)resizedHeight);
+    double resizedHeight = (this->size().width() / 960.0) * 580.0;
+    this->resize(this->size().width(),(int)resizedHeight + this->ui->statusbar->height() + 3);
 }
 
 void MainWindow::windowResizeCheck() {
@@ -84,14 +85,21 @@ void MainWindow::windowResizeCheck() {
     }
 }
 
-void MainWindow::saveScreenShot() {
-    cout << "took screenshot" << endl;
+void MainWindow::saveScreenShot(bool hideName) {
     QPixmap p = QPixmap::grabWidget(ui->webEngineView);
     QString savepath = QFileDialog::getSaveFileName(this,u8"スクショを保存","","PNG (*.png)");
     if(savepath.isEmpty()) return;
     if(!savepath.endsWith(".png")) savepath += ".png";
-    std::thread([=]{
-        p.save(savepath);
+    std::thread([&]{
+        //resize image
+        p = p.scaledToWidth(960);
+        QPixmap drawpixmap(p.size());
+        QPainter painter(&drawpixmap);
+        painter.drawPixmap(0,0,p);
+        painter.setBrush(QBrush(QColor::fromRgb(171,53,62)));
+        if(hideName) painter.drawRect(116,7,167,15);
+        drawpixmap.save(savepath);
+        cout << "took screenshot" << endl;
     }).join();
 }
 
@@ -129,4 +137,12 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     }else{
         event->ignore();
     }
+}
+
+void MainWindow::saveScreenShotWithName() {
+    saveScreenShot();
+}
+
+void MainWindow::saveScennShotWithoutName() {
+    saveScreenShot(true);
 }
