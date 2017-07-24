@@ -12,7 +12,7 @@ using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWindow){
     ui->setupUi(this);
-    this->setWindowTitle(u8"Saniwa");
+    this->setWindowTitle(QString("Saniwa(Build:") + QString(__DATE__) + QString(u8" ") + QString(__TIME__) + QString(u8")"));
     connect(ui->webEngineView,SIGNAL(loadFinished(bool)),this,SLOT(onBrowserLoadFinish(bool)));
     //init js plugin
     UserScriptManager::addUserScript(&ui->webEngineView->page()->scripts());

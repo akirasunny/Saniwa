@@ -11,7 +11,7 @@ function addJQuery(callback) {
 
 function resizeFrameMain() {
     //get page url
-    if(JQ(location).attr('href') == "http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"){
+    if (JQ(location).attr('href') == "http://pc-play.games.dmm.com/play/tohken/"){
         setTimeout(function(){
             JQ('#dmm-ntgnavi-renew').hide();
             JQ(".dmm-ntgnavi").hide();
