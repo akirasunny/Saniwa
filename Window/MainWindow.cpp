@@ -43,11 +43,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     ui->statusbar->addWidget(onTopButton.get());
     connect(onTopButton.get(),SIGNAL(toggled(bool)),this,SLOT(enableOnTop(bool)));
 #endif
-	muteButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
-	muteButton->setText(u8"消音");
-	muteButton->setCheckable(true);
-	ui->statusbar->addWidget(muteButton.get());
-	connect(muteButton.get(), SIGNAL(toggled(bool)), this, SLOT(enableMute(bool)));
+    muteButton = std::unique_ptr<QToolButton>(new QToolButton(ui->statusbar));
+    muteButton->setText(u8"消音");
+    muteButton->setCheckable(true);
+    ui->statusbar->addWidget(muteButton.get());
+    connect(muteButton.get(), SIGNAL(toggled(bool)), this, SLOT(enableMute(bool)));
     this->resize(960, 580 + this->ui->statusbar->height() + 3);
     cout << "window initialized" << endl;
 }
@@ -61,7 +61,6 @@ void MainWindow::onBrowserLoadFinish(bool stat) {
     std::string url = ui->webEngineView->url().toString().toStdString();
     cout << "Load finished. " << url << endl;
     if(url == "http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"){
-        tokenLoadOK = true;
         cout << "Game page load OK." << endl;
     }else if(url == "http://www.dmm.com/"){
         ui->webEngineView->page()->setUrl(QUrl("http://www.dmm.com/netgame/social/-/gadgets/=/app_id=825012/"));
@@ -78,7 +77,7 @@ void MainWindow::windowResizeCheck() {
     while (!stopAllWindowThread){
         lastSize = this->size();
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        if(tokenLoadOK && (lastSize.width() != this->size().width() || lastSize.height() != this->size().height())){
+        if(lastSize.width() != this->size().width() || lastSize.height() != this->size().height()){
             //call slot on main window thread
             QMetaObject::invokeMethod(this,"onWindowResized");
         }
@@ -104,7 +103,6 @@ void MainWindow::saveScreenShot(bool hideName) {
 }
 
 void MainWindow::logoutDMM() {
-    tokenLoadOK = false;
     if(QMessageBox::question(this,"Saniwa",u8"本当に本丸からログアウトしますか?",QMessageBox::Yes | QMessageBox::No,QMessageBox::No) == QMessageBox::Yes){
         ui->webEngineView->setUrl(QUrl(u8"https://www.dmm.com/my/-/login/logout/=/path=Sg__/"));
     }
@@ -118,17 +116,12 @@ void MainWindow::reloadPage() {
 }
 
 void MainWindow::enableOnTop(bool toggle) {
-    if(!toggle){
-        this->setWindowFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint);
-        this->show();
-    }else{
-        this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
-        this->show();
-    }
+    toggle ? this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint) : this->setWindowFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint);
+    this->show();
 }
 
 void MainWindow::enableMute(bool toggle) {
-	toggle ? ui->webEngineView->page()->setAudioMuted(true) : ui->webEngineView->page()->setAudioMuted(false);
+    toggle ? ui->webEngineView->page()->setAudioMuted(true) : ui->webEngineView->page()->setAudioMuted(false);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

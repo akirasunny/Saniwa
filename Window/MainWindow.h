@@ -16,7 +16,6 @@ private:
     std::unique_ptr<Ui::MainWindow> ui;
     std::unique_ptr<std::thread> wRThread;
     void windowResizeCheck();
-    bool tokenLoadOK = false;
     bool resizeLock = false;
     bool stopAllWindowThread = false;
     //ui
