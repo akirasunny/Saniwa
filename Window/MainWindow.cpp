@@ -4,6 +4,7 @@
 #include <QBrush>
 #include <QPainter>
 #include <QMessageBox>
+#include <QDateTime>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "Browser/UserScriptManager.h"
@@ -85,8 +86,9 @@ void MainWindow::windowResizeCheck() {
 }
 
 void MainWindow::saveScreenShot(bool hideName) {
+    QDateTime datetime = QDateTime::currentDateTime();
     QPixmap p = QPixmap::grabWidget(ui->webEngineView);
-    QString savepath = QFileDialog::getSaveFileName(this,u8"スクショを保存","","PNG (*.png)");
+    QString savepath = QFileDialog::getSaveFileName(this,u8"スクショを保存",u8"saniwa_" + datetime.toString("yyyyMMddhhmmss"),"PNG (*.png)");
     if(savepath.isEmpty()) return;
     if(!savepath.endsWith(".png")) savepath += ".png";
     std::thread([&]{
